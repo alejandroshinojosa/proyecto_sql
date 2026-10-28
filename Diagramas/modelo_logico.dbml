@@ -1,0 +1,82 @@
+//CATÁLOGOS
+Table campus {
+  id_campus  serial       [pk]
+  nombre_campus     varchar(50)  [not null, unique]
+}
+
+Table verticales {
+  id_vertical  serial       [pk]
+  nombre_vertical       varchar(50)  [not null, unique]
+}
+
+Table modalidad {
+  id_modalidad  serial       [pk]
+  nombre_modalidad        varchar(50)  [not null, unique]
+}
+
+//ENTIDADES PRINCIPALES
+Table promociones {
+  id_promocion    serial   [pk]
+  fecha_comienzo  date     [not null]
+  id_campus       integer  [not null, ref: > campus.id_campus]
+  id_vertical     integer  [not null, ref: > verticales.id_vertical]
+
+  indexes {
+    (fecha_comienzo, id_campus, id_vertical) [unique]
+  }
+}
+
+Table proyectos {
+  id_proyecto  serial        [pk]
+  nombre_proyecto       varchar(100)  [not null]
+  id_vertical  integer       [not null, ref: > verticales.id_vertical]
+
+  indexes {
+    (nombre_proyecto, id_vertical) [unique]
+  }
+}
+
+Table alumnos {
+  id_alumno  serial        [pk]
+  nombre_alumno     varchar(100)  [not null]
+  email      varchar(150)  [not null, unique]
+}
+
+Table profesores {
+  id_profesor  serial        [pk]
+  nombre_profesor       varchar(100)  [not null, unique]
+}
+
+//TABLAS DE CRUCE
+Table matriculas {
+  id_matricula  serial   [pk]
+  id_alumno     integer  [not null, ref: > alumnos.id_alumno]
+  id_promocion  integer  [not null, ref: > promociones.id_promocion]
+
+  indexes {
+    (id_alumno, id_promocion) [unique]
+  }
+}
+
+Table profesor_promocion {
+  id_profesor_promocion  serial       [pk]
+  id_profesor            integer      [not null, ref: > profesores.id_profesor]
+  id_promocion           integer      [not null, ref: > promociones.id_promocion]
+  id_modalidad           integer      [not null, ref: > modalidad.id_modalidad]
+  rol                    varchar(10)  [not null, note: 'TA o LI']
+
+  indexes {
+    (id_profesor, id_promocion) [unique]
+  }
+}
+
+Table alumno_proyecto {
+  id_alumno_proyecto  serial       [pk]
+  id_matricula        integer      [not null, ref: > matriculas.id_matricula]
+  id_proyecto         integer      [not null, ref: > proyectos.id_proyecto]
+  resultado           varchar(10)  [not null, note: 'Apto o No Apto']
+
+  indexes {
+    (id_matricula, id_proyecto) [unique]
+  }
+}
